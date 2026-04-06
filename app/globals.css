@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* --- DINPro fonty --- */
+/* Zkopíruj soubory z ../assets/fonts/ do public/fonts/ */
+@font-face { font-family: 'DINPro'; src: url('/fonts/dinpro_light.otf') format('opentype'); font-weight: 300; font-style: normal; font-display: swap; }
+@font-face { font-family: 'DINPro'; src: url('/fonts/dinpro.otf') format('opentype'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'DINPro'; src: url('/fonts/dinpro_medium.otf') format('opentype'); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: 'DINPro'; src: url('/fonts/dinpro_bold.otf') format('opentype'); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: 'DINPro'; src: url('/fonts/dinpro_black.otf') format('opentype'); font-weight: 900; font-style: normal; font-display: swap; }
+
+/* --- IcoMoon ikony --- */
+@font-face {
+  font-family: 'icomoon';
+  src: url('/fonts/icomoon.ttf?9wf15h') format('truetype'),
+       url('/fonts/icomoon.woff?9wf15h') format('woff'),
+       url('/fonts/icomoon.svg?9wf15h#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^='ic-'],
+[class*=' ic-'] {
+  font-family: 'icomoon' !important;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ikony */
+.ic-wallet-filled:before { content: '\e900'; }
+.ic-trend-up-filled:before { content: '\e901'; }
+.ic-house-filled:before { content: '\e902'; }
+.ic-helmet-filled:before { content: '\e903'; }
+.ic-lightning-filled:before { content: '\e904'; }
+.ic-pannels-filled:before { content: '\e905'; }
+.ic-arrow-right:before { content: '\e91d'; }
+.ic-chevron-down:before { content: '\e91e'; }
+
+/* --- Globální styly --- */
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  overflow-x: hidden;
+  color: #142f4c;
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scroll {
+  overflow: hidden;
+}
+
+/* ─── Mobile menu animace ─────────────────────────────────────────────────── */
+
+@keyframes menuItemIn {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes menuCtaIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.menu-open .menu-item {
+  animation: menuItemIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.menu-open .menu-item:nth-child(1) { animation-delay: 0.08s; }
+.menu-open .menu-item:nth-child(2) { animation-delay: 0.13s; }
+.menu-open .menu-item:nth-child(3) { animation-delay: 0.18s; }
+.menu-open .menu-item:nth-child(4) { animation-delay: 0.23s; }
+.menu-open .menu-item:nth-child(5) { animation-delay: 0.28s; }
+.menu-open .menu-item:nth-child(6) { animation-delay: 0.33s; }
+.menu-open .menu-item:nth-child(7) { animation-delay: 0.38s; }
+
+.menu-open .menu-cta {
+  animation: menuCtaIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.44s both;
+}
+
+/* ─── Scroll animations (AnimateOnScroll.tsx) ────────────────────────────── */
+
+.aos-init {
+  opacity: 0;
+  transition-property: opacity, transform;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  transition-duration: 0.75s;
+}
+
+.aos-init.aos-visible {
+  opacity: 1;
+  transform: none !important;
+}
+
+/* Počáteční stavy před animací */
+.aos--up    { transform: translateY(48px); }
+.aos--left  { transform: translateX(-56px); }
+.aos--right { transform: translateX(56px); }
+.aos--scale { transform: scale(0.9) translateY(24px); }
+.aos--fade  { /* pouze opacity, žádný transform */ }
+

@@ -1,0 +1,37 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /studio/
+
+# Sitemap
+Sitemap: https://www.bidlivdysine.cz/sitemap.xml
+
+# ── AI / LLM boti ─────────────────────────────────────────────────────────────
+# Povolujeme všechny AI crawlery pro GEO (Generative Engine Optimization)
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: Bytespider
+Allow: /
