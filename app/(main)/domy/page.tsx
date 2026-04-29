@@ -7,15 +7,15 @@ import type { SanityGalleryAlbum } from '@/components/GallerySection'
 export const revalidate = 60
 
 export const metadata: Metadata = buildMetadata({
-  title: 'Nabídka domů – 18 rodinných domů Hrabice u Vimperka',
-  description: '16 jednotek v 8 dvojdomech (110,5 m²) a 2 solitérní domy (94,7 m²) ve hrubé stavbě k dokončení. Obec Hrabice, Město Vimperk, Jihočeský kraj.',
+  title: 'Nabídka domů – 20 rodinných domů Hrabice u Vimperka',
+  description: '18 jednotek v dvojdomech (110,5 m²) a 2 solitérní domy (94,7 m²) ve hrubé stavbě k dokončení. Obec Hrabice, Město Vimperk, Jihočeský kraj.',
   path: '/domy',
 })
 
 // ─── Záložní data ──────────────────────────────────────────────────────────────
-// Dvojdomy: SO01–SO04, SO06–SO11, SO13–SO16 (110,5 m²)
+// Dvojdomy: SO01–SO04, SO06–SO11, SO13–SO18 (110,5 m²)
 // Solitéry: SO05, SO12 (94,7 m²)
-// Rozlohy pozemků dle situačního výkresu C.4
+// Rozlohy pozemků dle situačního výkresu C.4 – SO17/SO18 upřesněte po předání výkresů
 
 const FALLBACK_HOUSES: SanityHouse[] = [
   // ── Dvojdomy ────────────────────────────────────────────────────────────────
@@ -33,6 +33,8 @@ const FALLBACK_HOUSES: SanityHouse[] = [
   { _id: 'so14', id: 'SO14', typ: 'dvojdům', usableArea: '110,5 m²', plotSize: '621 m²', price: 'Info u makléře', status: 'volný' },
   { _id: 'so15', id: 'SO15', typ: 'dvojdům', usableArea: '110,5 m²', plotSize: '625 m²', price: 'Info u makléře', status: 'volný' },
   { _id: 'so16', id: 'SO16', typ: 'dvojdům', usableArea: '110,5 m²', plotSize: '635 m²', price: 'Info u makléře', status: 'volný' },
+  { _id: 'so17', id: 'SO17', typ: 'dvojdům', usableArea: '110,5 m²', plotSize: '–',      price: 'Info u makléře', status: 'volný' },
+  { _id: 'so18', id: 'SO18', typ: 'dvojdům', usableArea: '110,5 m²', plotSize: '–',      price: 'Info u makléře', status: 'volný' },
   // ── Solitéry ────────────────────────────────────────────────────────────────
   { _id: 'so05', id: 'SO05', typ: 'solitér', usableArea: '94,7 m²',  plotSize: '807 m²', price: 'Info u makléře', status: 'volný' },
   { _id: 'so12', id: 'SO12', typ: 'solitér', usableArea: '94,7 m²',  plotSize: '802 m²', price: 'Info u makléře', status: 'volný' },
@@ -41,7 +43,7 @@ const FALLBACK_HOUSES: SanityHouse[] = [
 const HOUSE_ORDER = [
   'SO01','SO02','SO03','SO04','SO05',
   'SO06','SO07','SO08','SO09','SO10',
-  'SO11','SO12','SO13','SO14','SO15','SO16',
+  'SO11','SO12','SO13','SO14','SO15','SO16','SO17','SO18',
 ]
 
 const GALLERY_ALBUMS_QUERY = `*[_type == "galleryAlbum"] | order(order asc) {

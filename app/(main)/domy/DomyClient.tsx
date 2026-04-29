@@ -1,6 +1,7 @@
 'use client'
 
 import { Fragment, useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import GallerySection, { type SanityGalleryAlbum } from '@/components/GallerySection'
 import ModalCarousel, { type ModalFile } from '@/components/ModalCarousel'
@@ -44,6 +45,106 @@ function StatusBadge({ status }: { status: HouseStatus }) {
   )
 }
 
+// ── Interaktivní mapa ──────────────────────────────────────────────────────────
+// Rozměry podkladového snímku (Dron 1 finalni.png): 2784 × 1536 px
+// SVG viewBox musí odpovídat těmto rozměrům.
+//
+// Jak přidat tvar:
+//   - polygon (přímé strany):  { kind: 'polygon', points: 'x1,y1 x2,y2 ...' }
+//   - path (zahnuté strany):   { kind: 'path', d: 'M... Z' }
+//   Hodnoty zkopírujte přímo z Figmy / Inkscapu – souřadnice jsou ve stejném
+//   prostoru jako viewBox="0 0 2784 1536".
+//
+type HouseShape =
+  | { kind: 'polygon'; points: string }
+  | { kind: 'path'; d: string }
+
+const HOUSE_SHAPES: Record<string, HouseShape> = {
+  // ── Dvojdomy ──────────────────────────────────────────────────────────────
+  SO01: { kind: 'path', d: 'M1626.3,1179.32l219-13.44,4.03-30.66,131.03-104.06,118.85,80.37,91.46-6.29,147.55,189.09,41.84,46.8,21.47,31.38s46.8,84.51-91.39,100.2c-56.71,4.72-205.36-5.78-205.36-5.78l-423.93-12.66-54.56-274.96Z' },
+  SO02: { kind: 'polygon', points: '1597.91,1014.17 1626.3,1179.32 1845.31,1165.89 1849.34,1135.23 1980.37,1031.17 2099.22,1111.54 2190.69,1105.25 2094.8,981.1 2010.58,986.87 1906.01,914.28 1797.18,1000.22 1597.91,1014.17' },
+  SO03: { kind: 'polygon', points: '1709.39,883.55 1580.25,891.4 1597.91,1014.17 1797.18,1000.22 1906.01,914.28 2010.58,986.87 2094.8,981.1 2005.74,869.95 1934.15,874.99 1822.13,787.23 1713.68,855.72 1709.39,883.55' },
+  SO04: { kind: 'path', d: 'M1542.91,683.74l37.34,207.66,129.14-7.85,4.28-27.83,108.45-68.5,112.02,87.76,71.59-5.04-75.73-101.95s-77.78-86.07-171.84-96.02l-215.26,11.76Z' },
+  SO06: { kind: 'path', d: 'M1774.32,612.22l25.52-25.07v-26.48l31.87-82.4,125.2,31.83,2.12,3.89,16.62,16.62,9.9,7.07,9.9-1.06,128.75,36.53-4.12,14.54-102.62,141.32s-112.24-74.5-243.14-116.78Z' },
+  SO07: { kind: 'path', d: 'M1666.89,454.63l50.6,10.18,6.78-13.57,107.44,27.03-31.87,82.4v26.48l-25.52,25.07s-94.71-32.64-195.07-48.19v-18.66l27.14-32.23,33.07-31.94,27.42-26.57Z' },
+  SO08: { kind: 'path', d: 'M1396.47,460.42v22.33l174.37,31.1v16.75l-31.1,29.77-63.53-4.52-126.52-3.46-198.02-5.05s-35.35-2.39-5.58-49.7l11.43-15.95,38.01-21.26,79.47-46.52h26.58l34.55-17.28,60.34,63.79Z' },
+  SO09: { kind: 'polygon', points: '1636.46,460.04 1570.84,513.85 1396.47,482.75 1396.47,460.42 1336.13,396.63 1301.58,413.91 1275,413.91 1321.1,384.33 1352.5,388.32 1385.99,366.69 1432.1,412.8 1636.46,460.04' },
+  SO10: { kind: 'polygon', points: '1527.14,369.66 1527.14,390.81 1687.03,420.91 1636.46,460.04 1432.1,412.8 1385.99,366.69 1352.5,388.32 1321.1,384.33 1387.92,345.09 1413.17,345.09 1472.2,310.97 1527.14,369.66' },
+  SO11: { kind: 'polygon', points: '1751.47,371.15 1687.03,420.91 1527.14,390.81 1527.14,369.66 1472.2,310.97 1413.17,345.09 1387.92,345.09 1460.48,302.31 1486.36,302.31 1513.7,285.71 1561.55,332.09 1751.47,371.15' },
+  SO13: { kind: 'polygon', points: '1041.63,382.54 1041.63,408.75 1094.04,417.06 1094.04,430.48 1007.75,481.61 994.33,478.5 994.33,450.93 965.57,449.01 960.45,460.04 912.52,452.21 899.09,454.77 838.37,443.26 838.37,439.21 743.66,415.39 722.05,423.77 706.16,419.8 698.66,410.09 694.69,410.53 688.08,416.71 662.49,416.27 662.49,411.42 791.31,355.39 894.1,377.45 923.66,352.3 989.4,321.42 1041.63,382.54' },
+  SO14: { kind: 'polygon', points: '878.27,316.78 791.31,355.39 894.1,377.45 923.66,352.3 989.4,321.42 1041.63,382.54 1041.63,408.75 1094.04,417.06 1094.04,430.48 1190,379.46 1189.15,364.6 1099.66,346.49 1048.94,292.14 994.95,318.59 984.73,322.41 878.27,303.01 878.27,316.78' },
+  SO15: { kind: 'polygon', points: '1199.36,301 1199.24,329.77 1243.25,335.46 1243.27,349.96 1190,379.46 1189.15,364.6 1099.66,346.49 1048.94,292.14 990.65,320.2 984.73,322.41 878.27,303.01 984.98,265.74 1080.75,283.94 1097.99,269.58 1150.66,244.67 1199.36,301' },
+  SO16: { kind: 'polygon', points: '1332.39,285.96 1332.39,300.55 1243.27,349.96 1243.25,335.46 1199.24,329.77 1199.36,301 1150.66,244.67 1097.99,269.58 1080.75,283.94 984.98,265.74 1042.62,244.67 1055.19,247.06 1055.59,239.36 1135.76,250.45 1200.71,220.5 1250.37,273.45 1332.39,285.96' },
+  SO17: { kind: 'polygon', points: '1332.39,234.99 1332.39,255.24 1377.47,262.88 1377.47,275.49 1332.39,300.55 1332.39,285.96 1250.37,273.45 1200.71,220.5 1135.76,250.45 1055.59,239.36 1114.23,217.8 1210.89,225.82 1240.69,202.13 1288.06,179.59 1332.39,234.99' },
+  SO18: { kind: 'polygon', points: '1426.37,236.14 1426.37,249.89 1377.47,275.49 1377.47,262.88 1332.39,255.24 1332.39,234.99 1288.06,179.59 1240.69,202.13 1210.89,225.82 1114.23,217.8 1158.68,198.31 1232.26,206.69 1330.01,159.75 1377.47,210.96 1369.65,215.2 1369.65,220.5 1426.37,236.14' },
+
+  // ── Solitéry ──────────────────────────────────────────────────────────────
+  SO05: { kind: 'polygon', points: '2100.48,639.63 2044.42,713.21 2183.87,870.88 2180.36,894.7 2420.72,870.88 2523.03,760.86 2526.53,742.64 2338.03,699.9 2250.33,641.84 2214.25,668.76 2114.88,645.69 2114.88,642.43 2100.48,639.63' },
+  SO12: { kind: 'polygon', points: '1837.52,303.41 1751.47,371.15 1561.55,332.09 1513.7,285.71 1486.36,302.31 1460.48,302.31 1531.48,259.79 1548.03,261.73 1625.5,215.13 1677.14,266.48 1670.61,271.53 1670.57,273.95 1742.16,285.71 1837.52,303.41' },
+}
+
+// Barvy dle stavu – normální / hover
+const SHAPE_FILL: Record<HouseStatus, { normal: string; hover: string }> = {
+  'volný':       { normal: 'rgba(34,197,94,0.30)',   hover: 'rgba(34,197,94,0.60)'   },
+  'rezervováno': { normal: 'rgba(251,146,60,0.35)',  hover: 'rgba(251,146,60,0.65)'  },
+  'prodáno':     { normal: 'rgba(156,163,175,0.35)', hover: 'rgba(156,163,175,0.65)' },
+}
+const SHAPE_STROKE: Record<HouseStatus, string> = {
+  'volný':       '#16a34a',
+  'rezervováno': '#ea580c',
+  'prodáno':     '#9ca3af',
+}
+
+// Střed tvaru pro label
+// polygon: průměr vrcholů
+// path:    skutečný parser – převede relativní příkazy (l, v, c, s…) na absolutní
+//          souřadnice a vrátí průměr vrcholů (kontrolní body Bezier přeskakujeme)
+function pathEndpoints(d: string): Array<[number, number]> {
+  const pts: Array<[number, number]> = []
+  let cx = 0, cy = 0
+  const nums = (raw: string) => (raw.match(/-?\d+(?:\.\d+)?/g) ?? []).map(Number)
+  const cmdRe = /([MmLlHhVvCcSsZz])([^MmLlHhVvCcSsZz]*)/g
+  let m: RegExpExecArray | null
+  while ((m = cmdRe.exec(d)) !== null) {
+    const cmd = m[1], a = nums(m[2])
+    switch (cmd) {
+      case 'M': for (let i=0;i+1<a.length;i+=2){ cx=a[i];cy=a[i+1];pts.push([cx,cy]) } break
+      case 'm': for (let i=0;i+1<a.length;i+=2){ cx+=a[i];cy+=a[i+1];pts.push([cx,cy]) } break
+      case 'L': for (let i=0;i+1<a.length;i+=2){ cx=a[i];cy=a[i+1];pts.push([cx,cy]) } break
+      case 'l': for (let i=0;i+1<a.length;i+=2){ cx+=a[i];cy+=a[i+1];pts.push([cx,cy]) } break
+      case 'H': for (let i=0;i<a.length;i++){ cx=a[i];pts.push([cx,cy]) } break
+      case 'h': for (let i=0;i<a.length;i++){ cx+=a[i];pts.push([cx,cy]) } break
+      case 'V': for (let i=0;i<a.length;i++){ cy=a[i];pts.push([cx,cy]) } break
+      case 'v': for (let i=0;i<a.length;i++){ cy+=a[i];pts.push([cx,cy]) } break
+      // Cubic bezier – endpoint je každý 6. pár (absolutní)
+      case 'C': for (let i=0;i+5<a.length;i+=6){ cx=a[i+4];cy=a[i+5];pts.push([cx,cy]) } break
+      // Cubic bezier – endpoint je každý 6. pár (relativní)
+      case 'c': for (let i=0;i+5<a.length;i+=6){ cx+=a[i+4];cy+=a[i+5];pts.push([cx,cy]) } break
+      // Smooth cubic bezier – endpoint je každý 4. pár (absolutní)
+      case 'S': for (let i=0;i+3<a.length;i+=4){ cx=a[i+2];cy=a[i+3];pts.push([cx,cy]) } break
+      // Smooth cubic bezier – endpoint je každý 4. pár (relativní)
+      case 's': for (let i=0;i+3<a.length;i+=4){ cx+=a[i+2];cy+=a[i+3];pts.push([cx,cy]) } break
+    }
+  }
+  return pts
+}
+
+function shapeCentroid(shape: HouseShape): { cx: number; cy: number } {
+  let pts: Array<[number, number]>
+  if (shape.kind === 'polygon') {
+    const a = shape.points.trim().split(/[\s,]+/).map(Number)
+    pts = []
+    for (let i = 0; i + 1 < a.length; i += 2) pts.push([a[i], a[i+1]])
+  } else {
+    pts = pathEndpoints(shape.d)
+  }
+  if (!pts.length) return { cx: 0, cy: 0 }
+  return {
+    cx: pts.reduce((s, [x]) => s + x, 0) / pts.length,
+    cy: pts.reduce((s, [, y]) => s + y, 0) / pts.length,
+  }
+}
+
 interface TooltipState {
   house: SanityHouse
   x: number
@@ -58,6 +159,11 @@ interface Props {
 
 export default function DomyClient({ houses, galleryImages = [], albums }: Props) {
   const [selectedHouse, setSelectedHouse] = useState<SanityHouse | null>(null)
+  const [tooltip, setTooltip] = useState<TooltipState | null>(null)
+  const [hoveredId, setHoveredId] = useState<string | null>(null)
+
+  // Lookup map id → house
+  const houseById = Object.fromEntries(houses.map((h) => [h.id, h]))
 
   const dvojdomy = houses.filter((h) => h.typ === 'dvojdům' && !h.hidden)
   const solitery = houses.filter((h) => h.typ === 'solitér' && !h.hidden)
@@ -72,16 +178,15 @@ export default function DomyClient({ houses, galleryImages = [], albums }: Props
     <>
       {/* HERO */}
       <section className="relative p-2 h-[40vh] min-h-[400px]">
-        <div
-          className="relative flex flex-col justify-center h-full rounded-[3rem] overflow-hidden"
-          style={{ backgroundColor: '#ec4899' }}
-        >
-          {/* Růžový placeholder */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-white/30 text-sm font-bold uppercase tracking-widest select-none">
-              Vizualizace / fotografie
-            </span>
-          </div>
+        <div className="relative flex flex-col justify-center h-full rounded-[3rem] overflow-hidden bg-gray-900">
+          <Image
+            src="/img/ext-1.png"
+            alt="Vizualizace rodinných domů Hrabice"
+            fill
+            className="object-cover pointer-events-none"
+            sizes="100vw"
+            priority
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/60 to-gray-900/30" />
           <div className="relative z-10 container mx-auto px-6 mt-16 text-center">
             <div className="max-w-3xl mx-auto text-white">
@@ -89,7 +194,7 @@ export default function DomyClient({ houses, galleryImages = [], albums }: Props
                 Nabídka <span className="text-accent">domů</span>
               </h1>
               <p className="text-lg md:text-xl font-light opacity-90">
-                18 rodinných domů ve hrubé stavbě — vyberte si ten svůj a dokončete ho po svém.
+                20 rodinných domů ve hrubé stavbě — vyberte si ten svůj a dokončete ho po svém.
               </p>
             </div>
           </div>
@@ -108,19 +213,111 @@ export default function DomyClient({ houses, galleryImages = [], albums }: Props
         </div>
       </section>
 
-      {/* MAPA – situační výkres jako růžový placeholder */}
+      {/* MAPA – interaktivní situační výkres */}
       <section className="py-12 md:py-16 container mx-auto px-6">
         <div className="text-center mb-8">
           <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">Situace lokality</h2>
-          <p className="text-gray-600 font-light text-lg">Přehled rozmístění domů v lokalitě.</p>
+          <p className="text-gray-600 font-light text-lg">Klikněte na dům pro zobrazení detailu.</p>
         </div>
+
+        {/* Wrapper zachovává poměr stran 2784:1536 = 13:7.17 */}
         <div
-          className="relative w-full max-w-6xl mx-auto rounded-[2.5rem] overflow-hidden shadow-2xl border border-gray-200 flex items-center justify-center"
-          style={{ aspectRatio: '16/9', backgroundColor: '#ec4899' }}
+          className="relative w-full max-w-6xl mx-auto rounded-[2.5rem] overflow-hidden shadow-2xl border border-gray-200 bg-gray-100"
+          style={{ aspectRatio: '2784 / 1536' }}
         >
-          <span className="text-white/50 text-sm font-bold uppercase tracking-widest select-none">
-            Situační výkres / interaktivní mapa
-          </span>
+          {/* Podkladový snímek */}
+          <Image
+            src="/img/dron-finalni.png"
+            alt="Letecký pohled na lokalitu Hrabice"
+            fill
+            className="object-cover pointer-events-none select-none"
+            sizes="(max-width: 1280px) 100vw, 1152px"
+            priority
+          />
+
+          {/* SVG overlay – tvary domů */}
+          <svg
+            viewBox="0 0 2784 1536"
+            className="absolute inset-0 w-full h-full z-10"
+            preserveAspectRatio="xMidYMid meet"
+            style={{ cursor: 'default' }}
+          >
+            {Object.entries(HOUSE_SHAPES).map(([soId, shape]) => {
+              const house = houseById[soId]
+              if (!house || house.hidden) return null
+              const st = house.status
+              const { cx, cy } = shapeCentroid(shape)
+
+              const isHovered = hoveredId === soId
+              // Společné SVG props pro polygon i path
+              const shapeProps = {
+                fill: isHovered ? SHAPE_FILL[st].hover : SHAPE_FILL[st].normal,
+                stroke: SHAPE_STROKE[st],
+                strokeWidth: isHovered ? 4 : 3,
+                strokeLinejoin: 'round' as const,
+                style: { cursor: 'pointer', transition: 'fill 0.15s, stroke-width 0.15s' },
+                onMouseEnter: (e: React.MouseEvent<SVGElement>) => {
+                  setHoveredId(soId)
+                  const svgEl = e.currentTarget.closest('svg') as SVGSVGElement
+                  const pt = svgEl.createSVGPoint()
+                  pt.x = e.clientX; pt.y = e.clientY
+                  const svgPt = pt.matrixTransform(svgEl.getScreenCTM()!.inverse())
+                  setTooltip({ house, x: svgPt.x, y: svgPt.y })
+                },
+                onMouseLeave: () => { setHoveredId(null); setTooltip(null) },
+                onClick: () => { setHoveredId(null); setTooltip(null); setSelectedHouse(house) },
+              }
+
+              return (
+                <g key={soId}>
+                  {shape.kind === 'polygon'
+                    ? <polygon points={shape.points} {...shapeProps} />
+                    : <path d={shape.d} {...shapeProps} />
+                  }
+                  {/* Label – označení domu */}
+                  <text
+                    x={cx}
+                    y={cy}
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    fontSize={28}
+                    fontWeight="bold"
+                    fill="white"
+                    stroke="rgba(0,0,0,0.6)"
+                    strokeWidth={4}
+                    paintOrder="stroke"
+                    style={{ pointerEvents: 'none', userSelect: 'none' }}
+                  >
+                    {soId}
+                  </text>
+                </g>
+              )
+            })}
+
+            {/* Tooltip uvnitř SVG */}
+            {tooltip && (() => {
+              const { house, x, y } = tooltip
+              const tw = 260; const th = 80
+              // Posun tooltippu, aby nevylezl mimo viewBox
+              const tx = Math.min(x + 16, 2784 - tw - 8)
+              const ty = Math.max(y - th - 12, 8)
+              return (
+                <g style={{ pointerEvents: 'none' }}>
+                  <rect x={tx} y={ty} width={tw} height={th} rx={12} fill="white" opacity={0.97} filter="drop-shadow(0 4px 16px rgba(0,0,0,0.18))" />
+                  <text x={tx + 16} y={ty + 26} fontSize={22} fontWeight="bold" fill="#111">{house.id} – {house.typ}</text>
+                  <text x={tx + 16} y={ty + 50} fontSize={18} fill="#555">{house.price ?? 'Cena na dotaz'}</text>
+                  <text x={tx + 16} y={ty + 70} fontSize={15} fill={SHAPE_STROKE[house.status]}>{statusConfig[house.status].label}</text>
+                </g>
+              )
+            })()}
+          </svg>
+        </div>
+
+        {/* Legenda pod mapou */}
+        <div className="flex flex-wrap justify-center gap-4 mt-5 text-sm text-gray-600">
+          <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-green-500" /> Volný</div>
+          <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-orange-400" /> Rezervace</div>
+          <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-gray-400" /> Prodáno</div>
         </div>
       </section>
 

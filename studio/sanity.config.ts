@@ -3,11 +3,11 @@ import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
 import {schemaTypes} from './schemaTypes'
 
-// Dvojdomy: SO01–SO04, SO06–SO11, SO13–SO16 (110,5 m²)
+// Dvojdomy: SO01–SO04, SO06–SO11, SO13–SO18 (110,5 m²)
 const DVOJDOMY_IDS = [
   'SO01', 'SO02', 'SO03', 'SO04',
   'SO06', 'SO07', 'SO08', 'SO09', 'SO10', 'SO11',
-  'SO13', 'SO14', 'SO15', 'SO16',
+  'SO13', 'SO14', 'SO15', 'SO16', 'SO17', 'SO18',
 ]
 
 // Solitéry: SO05, SO12 (94,7 m²)
@@ -59,7 +59,7 @@ export default defineConfig({
 
             // ── Dvojdomy ────────────────────────────────────────────────────
             S.listItem()
-              .title('🏘  Dvojdomy (16 jednotek)')
+              .title('🏘  Dvojdomy (18 jednotek)')
               .child(
                 S.list()
                   .title('Dvojdomy')
