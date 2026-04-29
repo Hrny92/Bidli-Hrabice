@@ -11,6 +11,7 @@ export const siteConfigSchema = defineType({
     defineField({ name: 'agentEmail',  title: 'E-mail',             type: 'string' }),
     defineField({ name: 'agentPhoto',  title: 'Foto makléře',       type: 'image', options: { hotspot: true } }),
     defineField({ name: 'agentQuote',  title: 'Citát / motto',      type: 'text' }),
+    defineField({ name: 'agentBio',    title: 'Bio (text ve footeru)', type: 'text', description: 'Krátký popis makléře zobrazený ve spodní části footeru.' }),
   ],
   preview: {
     select: { title: 'siteName' },

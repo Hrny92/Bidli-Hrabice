@@ -10,6 +10,7 @@ interface SiteConfig {
   agentEmail?: string
   agentPhotoUrl?: string
   agentQuote?: string
+  agentBio?: string
 }
 
 const SITE_CONFIG_QUERY = `*[_type == "siteConfig"][0] {
@@ -17,7 +18,8 @@ const SITE_CONFIG_QUERY = `*[_type == "siteConfig"][0] {
   agentPhone,
   agentEmail,
   "agentPhotoUrl": agentPhoto.asset->url,
-  agentQuote
+  agentQuote,
+  agentBio
 }`
 
 export default async function Footer() {
@@ -33,6 +35,7 @@ export default async function Footer() {
   const agentEmail    = config.agentEmail    || SITE.agent.email
   const agentPhotoUrl = config.agentPhotoUrl || '/img/Benedyktova.png'
   const agentQuote    = config.agentQuote    || 'Ráda se s vámi potkám přímo na místě, nebo vám zašlu doplňující informace a plány. Napište mi.'
+  const agentBio      = config.agentBio      || `${agentName}, realitní specialistka sítě BIDLI. Ráda vás provedu nabídkou rodinných domů v obci Hrabice u Vimperka a pomohu zajistit hladký průběh koupě.`
   const agentPhoneRaw = agentPhone.replace(/\s/g, '')
 
   return (
@@ -98,7 +101,7 @@ export default async function Footer() {
               <Image src="/img/logo-white.svg" alt="Logo" width={112} height={40} className="w-24 md:w-28 opacity-90 hover:opacity-100 transition-opacity" />
             </TransitionLink>
             <p className="font-light leading-relaxed max-w-sm">
-              {agentName}, realitní specialistka sítě BIDLI. Ráda vás provedu nabídkou rodinných domů v obci Hrabice u Vimperka a pomohu zajistit hladký průběh koupě.
+              {agentBio}
             </p>
             <div className="flex gap-4 mt-2">
               {[
