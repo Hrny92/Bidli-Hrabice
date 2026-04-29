@@ -8,12 +8,16 @@ interface SiteConfig {
   agentName?: string
   agentPhone?: string
   agentEmail?: string
+  agentPhotoUrl?: string
+  agentQuote?: string
 }
 
 const SITE_CONFIG_QUERY = `*[_type == "siteConfig"][0] {
   agentName,
   agentPhone,
-  agentEmail
+  agentEmail,
+  "agentPhotoUrl": agentPhoto.asset->url,
+  agentQuote
 }`
 
 export default async function Footer() {
@@ -24,9 +28,11 @@ export default async function Footer() {
     // fallback na hardcoded hodnoty
   }
 
-  const agentName  = config.agentName  || SITE.agent.name
-  const agentPhone = config.agentPhone || SITE.agent.phoneFormatted
-  const agentEmail = config.agentEmail || SITE.agent.email
+  const agentName     = config.agentName     || SITE.agent.name
+  const agentPhone    = config.agentPhone    || SITE.agent.phoneFormatted
+  const agentEmail    = config.agentEmail    || SITE.agent.email
+  const agentPhotoUrl = config.agentPhotoUrl || '/img/Benedyktova.png'
+  const agentQuote    = config.agentQuote    || 'Ráda se s vámi potkám přímo na místě, nebo vám zašlu doplňující informace a plány. Napište mi.'
   const agentPhoneRaw = agentPhone.replace(/\s/g, '')
 
   return (
@@ -56,17 +62,18 @@ export default async function Footer() {
                 </h2>
                 <div className="bg-white/60 backdrop-blur-md border border-gray-200 p-6 rounded-[2rem] shadow-xl relative z-30 max-w-sm mx-auto lg:mx-0 pointer-events-auto">
                   <p className="text-gray-700 text-lg font-light italic border-l-2 border-accent pl-4">
-                    „Ráda se s vámi potkám přímo na místě, nebo vám zašlu doplňující informace a plány. Napište mi."
+                    „{agentQuote}"
                   </p>
                 </div>
               </div>
               <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[300px] h-[300px] bg-accent rounded-full blur-[120px] opacity-10 z-0" />
               <Image
-                src="/img/Benedyktova.png"
+                src={agentPhotoUrl}
                 alt={agentName}
                 width={500}
                 height={600}
                 className="w-full max-w-[500px] object-contain object-bottom relative z-10 mx-auto lg:ml-auto lg:mr-0 -mb-px pt-48 drop-shadow-[0_-10px_30px_rgba(0,0,0,0.1)] pointer-events-none"
+                unoptimized={agentPhotoUrl.startsWith('https://')}
               />
             </div>
 
