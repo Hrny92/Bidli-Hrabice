@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import GallerySection, { type SanityGalleryAlbum } from '@/components/GallerySection'
 import { sanityClient } from '@/sanity/client'
 import { SiteIcon } from '@/lib/icons'
@@ -17,16 +18,11 @@ export const metadata: Metadata = buildMetadata({
 
 // ─── Typy ─────────────────────────────────────────────────────────────────────
 
-interface SanityImage {
-  _type: 'image'
-  asset: { _ref: string }
-}
-
 interface SanityHomepage {
   heroHeadline?: string
   heroHeadlineAccent?: string
   heroSubheadline?: string
-  heroImage?: SanityImage
+  heroImageUrl?: string
   infoStats?: { label: string; value: string; colored?: boolean }[]
   aboutHeading?: string
   aboutParagraph1?: string
@@ -34,8 +30,8 @@ interface SanityHomepage {
   aboutParagraph3?: string
   aboutHighlightTitle?: string
   aboutHighlightItems?: { label: string; value: string }[]
-  aboutImage1?: SanityImage
-  aboutImage2?: SanityImage
+  aboutImage1Url?: string
+  aboutImage2Url?: string
   techHeading?: string
   techCards?: { icon?: string; title: string; text: string }[]
   locationHeading?: string
@@ -52,7 +48,7 @@ const HOMEPAGE_QUERY = `*[_type == "homepage"][0] {
   heroHeadline,
   heroHeadlineAccent,
   heroSubheadline,
-  heroImage,
+  "heroImageUrl": heroImage.asset->url,
   infoStats,
   aboutHeading,
   aboutParagraph1,
@@ -60,8 +56,8 @@ const HOMEPAGE_QUERY = `*[_type == "homepage"][0] {
   aboutParagraph3,
   aboutHighlightTitle,
   aboutHighlightItems,
-  aboutImage1,
-  aboutImage2,
+  "aboutImage1Url": aboutImage1.asset->url,
+  "aboutImage2Url": aboutImage2.asset->url,
   techHeading,
   techCards,
   locationHeading,
@@ -145,15 +141,18 @@ export default async function HomePage() {
       {/* HERO */}
       <section className="relative p-2 h-2/4">
         <div
-          className="relative flex flex-col justify-end h-full rounded-[3rem] overflow-hidden"
-          style={{ minHeight: '75vh', backgroundColor: '#ec4899' }}
+          className="relative flex flex-col justify-end h-full rounded-[3rem] overflow-hidden bg-gray-900"
+          style={{ minHeight: '75vh' }}
         >
-          {/* Růžový placeholder – bude nahrazen fotografií */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-white/40 text-sm font-bold uppercase tracking-widest select-none">
-              Vizualizace / fotografie
-            </span>
-          </div>
+          <Image
+            src={hp.heroImageUrl ?? '/img/ext-2.png'}
+            alt="Vizualizace rodinných domů Hrabice"
+            fill
+            className="object-cover pointer-events-none"
+            sizes="100vw"
+            priority
+            unoptimized={!!hp.heroImageUrl}
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-gray-900/60 via-gray-900/20 to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-r from-gray-900/100 via-gray-900/80 to-transparent" />
           <div className="relative z-10 container mx-auto px-6 pb-14 md:pb-32 pt-32">
@@ -287,18 +286,28 @@ export default async function HomePage() {
           </div>
           </AnimateOnScroll>
 
-          {/* Fotografie – růžový placeholder */}
+          {/* Fotografie sekce O projektu */}
           <AnimateOnScroll animation="right" delay={150}>
           <div className="flex flex-col gap-8 w-full h-full justify-center mt-8 lg:mt-0">
-            <div className="w-full aspect-video rounded-[2.5rem] overflow-hidden shadow-xl relative bg-pink-500 flex items-center justify-center">
-              <span className="text-white/50 text-sm font-bold uppercase tracking-widest select-none">
-                Vizualizace exteriéru
-              </span>
+            <div className="w-full aspect-video rounded-[2.5rem] overflow-hidden shadow-xl relative bg-gray-200">
+              <Image
+                src={hp.aboutImage1Url ?? '/img/ext-3.png'}
+                alt="Vizualizace exteriéru"
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                unoptimized={!!hp.aboutImage1Url}
+              />
             </div>
-            <div className="w-full aspect-video rounded-[2.5rem] overflow-hidden shadow-xl relative bg-pink-500 flex items-center justify-center">
-              <span className="text-white/50 text-sm font-bold uppercase tracking-widest select-none">
-                Vizualizace interiéru
-              </span>
+            <div className="w-full aspect-video rounded-[2.5rem] overflow-hidden shadow-xl relative bg-gray-200">
+              <Image
+                src={hp.aboutImage2Url ?? '/img/ext-4.png'}
+                alt="Vizualizace interiéru"
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                unoptimized={!!hp.aboutImage2Url}
+              />
             </div>
           </div>
           </AnimateOnScroll>
