@@ -40,7 +40,7 @@ function buildHtml(name: string, phone: string, email: string, message: string):
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Nová poptávka – Bidli v Dýšině</title>
+  <title>Nová poptávka – Bidli v Hrabicích</title>
 </head>
 <body style="margin:0;padding:0;background:#f4f4f5;font-family:'Segoe UI',Arial,sans-serif;">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:40px 0;">
@@ -54,8 +54,8 @@ function buildHtml(name: string, phone: string, email: string, message: string):
           <tr>
             <td>
               <p style="margin:0 0 4px;color:#ef8625;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:700;">Nová poptávka z webu</p>
-              <h1 style="margin:0;color:#ffffff;font-size:26px;font-weight:800;line-height:1.2;">Bidli v&nbsp;Dýšině</h1>
-              <p style="margin:6px 0 0;color:#8aa8c4;font-size:13px;">bidlivdysine.cz</p>
+              <h1 style="margin:0;color:#ffffff;font-size:26px;font-weight:800;line-height:1.2;">Bidli v&nbsp;Hrabicích</h1>
+              <p style="margin:6px 0 0;color:#8aa8c4;font-size:13px;">hrabice.bidli.cz</p>
             </td>
             <td align="right" style="vertical-align:top;">
               <span style="background:#ef8625;border-radius:50px;padding:8px 18px;color:#fff;font-size:12px;font-weight:700;white-space:nowrap;">📩 Formulář</span>
@@ -73,7 +73,7 @@ function buildHtml(name: string, phone: string, email: string, message: string):
       <td style="background:#ffffff;padding:40px 48px;">
 
         <p style="margin:0 0 28px;color:#4b5563;font-size:15px;line-height:1.6;">
-          Někdo vyplnil kontaktní formulář na webu <strong>bidlivdysine.cz</strong>. Níže najdeš všechny zadané údaje.
+          Někdo vyplnil kontaktní formulář na webu <strong>hrabice.bidli.cz</strong>. Níže najdeš všechny zadané údaje.
         </p>
 
         <!-- KONTAKTNÍ ÚDAJE -->
@@ -150,7 +150,7 @@ function buildHtml(name: string, phone: string, email: string, message: string):
             <td>
               <p style="margin:0;color:#9ca3af;font-size:12px;line-height:1.6;">
                 Odesláno <strong>${now}</strong> z formuláře na
-                <a href="https://www.bidlivdysine.cz" style="color:#ef8625;text-decoration:none;">bidlivdysine.cz</a>
+                <a href="https://hrabice.bidli.cz" style="color:#ef8625;text-decoration:none;">hrabice.bidli.cz</a>
               </p>
             </td>
             <td align="right">
@@ -180,7 +180,7 @@ export async function POST(req: NextRequest) {
     }
 
     await transporter.sendMail({
-      from: `"Web Bidli v Dýšině" <${process.env.SMTP_FROM}>`,
+      from: `"Web Bidli v Hrabicích" <${process.env.SMTP_FROM}>`,
       to: process.env.MAIL_TO,
       replyTo: email,
       subject: `Nová poptávka z webu – ${name}`,
