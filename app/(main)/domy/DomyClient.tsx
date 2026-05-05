@@ -418,6 +418,13 @@ export default function DomyClient({ houses, galleryImages = [], albums }: Props
         albums={albums}
       />
 
+      {/* DISCLAIMER – vizualizace */}
+      <section className="container mx-auto px-6 pb-8 -mt-4">
+        <p className="text-center text-xs text-gray-400 max-w-2xl mx-auto leading-relaxed">
+          * Fotografie a vizualizace jsou pouze ilustrační. Skutečná podoba dokončených domů se může lišit v závislosti na zvoleném provedení interiérů, materiálech a terénních úpravách pozemku.
+        </p>
+      </section>
+
       {/* DETAIL MODAL */}
       {selectedHouse && (
         <div
@@ -500,21 +507,19 @@ export default function DomyClient({ houses, galleryImages = [], albums }: Props
 
             {/* PRAVÝ SLOUPEC – obrázky / půdorysy */}
             <div className="w-full md:w-[58%] bg-gray-50 flex flex-col min-h-[320px] md:min-h-0 border-t md:border-t-0 md:border-l border-gray-100">
-              {/* Růžový placeholder dokud nejsou fotky */}
               {(selectedHouse.photos?.filter(Boolean).length ?? 0) === 0 &&
-               galleryImages.length === 0 ? (
-                <div className="flex-1 flex items-center justify-center bg-pink-500">
-                  <span className="text-white/60 text-sm font-bold uppercase tracking-widest select-none">
-                    Fotografie / vizualizace
-                  </span>
+               (selectedHouse.floorPlans?.length ?? 0) === 0 &&
+               (selectedHouse.catalogSheets?.length ?? 0) === 0 ? (
+                <div className="flex-1 flex flex-col items-center justify-center gap-3 px-8 text-center">
+                  <svg className="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <p className="text-gray-400 text-sm font-medium">Fotografie zatím nejsou k dispozici</p>
+                  <p className="text-gray-300 text-xs">Kontaktujte nás pro více informací o tomto domu.</p>
                 </div>
               ) : (
                 <ModalCarousel
-                  images={
-                    (selectedHouse.photos?.filter(Boolean).length ?? 0) > 0
-                      ? selectedHouse.photos!.filter(Boolean)
-                      : galleryImages
-                  }
+                  images={selectedHouse.photos?.filter(Boolean) ?? []}
                   floorPlans={selectedHouse.floorPlans ?? []}
                   catalogSheets={selectedHouse.catalogSheets ?? []}
                 />
