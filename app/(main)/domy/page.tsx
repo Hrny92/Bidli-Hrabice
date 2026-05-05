@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { sanityClient } from '@/sanity/client'
+import { sanityClient, optimizeSanityUrl } from '@/sanity/client'
 import DomyClient, { type SanityHouse } from './DomyClient'
 import { buildMetadata } from '@/lib/seo'
 import type { SanityGalleryAlbum } from '@/components/GallerySection'
@@ -94,11 +94,24 @@ export default async function DomyPage() {
       sanityClient.fetch<SanityGalleryAlbum[]>(GALLERY_ALBUMS_QUERY),
     ])
 
+    // Optimalizace URL fotek domů: šířka 1400px (modal carousel) + auto WebP
     houses = houseData?.length
-      ? houseData.sort((a, b) => HOUSE_ORDER.indexOf(a.id) - HOUSE_ORDER.indexOf(b.id))
+      ? houseData
+          .sort((a, b) => HOUSE_ORDER.indexOf(a.id) - HOUSE_ORDER.indexOf(b.id))
+          .map((h) => ({
+            ...h,
+            photos: h.photos?.map((url) => optimizeSanityUrl(url, 1400, 82)),
+          }))
       : FALLBACK_HOUSES
 
-    albums = albumData ?? []
+    // Optimalizace URL obrázků v albech: šířka 2000px pro lightbox (Fancybox)
+    albums = (albumData ?? []).map((album) => ({
+      ...album,
+      images: album.images?.map((img) => ({
+        ...img,
+        url: optimizeSanityUrl(img.url, 2000, 85),
+      })),
+    }))
 
     galleryImages = albums
       .filter((a) => ['exteriery', 'interiery'].includes(a.slug))

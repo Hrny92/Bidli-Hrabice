@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import GallerySection, { type SanityGalleryAlbum } from '@/components/GallerySection'
-import { sanityClient } from '@/sanity/client'
+import { sanityClient, optimizeSanityUrl } from '@/sanity/client'
 import { SiteIcon } from '@/lib/icons'
 import AnimateOnScroll from '@/components/AnimateOnScroll'
 import TransitionLink from '@/components/TransitionLink'
@@ -124,8 +124,22 @@ export default async function HomePage() {
       sanityClient.fetch<SanityHomepage>(HOMEPAGE_QUERY),
       sanityClient.fetch<SanityGalleryAlbum[]>(GALLERY_QUERY),
     ])
-    hp = hpData ?? {}
-    galleries = galData ?? []
+    // Optimalizace hero/about obrázků: 1920px šířka pro fullscreen fotky
+    hp = hpData ? {
+      ...hpData,
+      heroImageUrl:   optimizeSanityUrl(hpData.heroImageUrl,   1920, 85),
+      aboutImage1Url: optimizeSanityUrl(hpData.aboutImage1Url, 1200, 85),
+      aboutImage2Url: optimizeSanityUrl(hpData.aboutImage2Url, 1200, 85),
+    } : {}
+
+    // Optimalizace URL obrázků v albech: 2000px pro lightbox
+    galleries = (galData ?? []).map((album) => ({
+      ...album,
+      images: album.images?.map((img) => ({
+        ...img,
+        url: optimizeSanityUrl(img.url, 2000, 85),
+      })),
+    }))
   } catch {
     // Sanity nedostupná → záložní hodnoty
   }
