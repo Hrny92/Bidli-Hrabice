@@ -403,6 +403,13 @@ export default async function HomePage() {
         title="Prozkoumejte projekt"
       />
       </AnimateOnScroll>
+
+      {/* DISCLAIMER – vizualizace */}
+      <section className="container mx-auto px-6 pb-8 -mt-4">
+        <p className="text-center text-xs text-gray-400 max-w-2xl mx-auto leading-relaxed">
+          * Fotografie a vizualizace jsou pouze ilustrační. Skutečná podoba dokončených domů se může lišit v závislosti na zvoleném provedení interiérů, materiálech a terénních úpravách pozemku.
+        </p>
+      </section>
     </>
   )
 }
