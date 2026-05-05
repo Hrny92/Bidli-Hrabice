@@ -4,10 +4,10 @@ Disallow: /api/
 Disallow: /studio/
 
 # Sitemap
-Sitemap: https://www.bidlivdysine.cz/sitemap.xml
+Sitemap: https://www.bidlivhrabicich.cz/sitemap.xml
 
-# ── AI / LLM boti ─────────────────────────────────────────────────────────────
-# Povolujeme všechny AI crawlery pro GEO (Generative Engine Optimization)
+# ── AI / LLM crawlery – GEO (Generative Engine Optimization) ──────────────────
+# Povolujeme všechny AI crawlery pro indexaci obsahu v AI vyhledávačích
 
 User-agent: GPTBot
 Allow: /
@@ -34,4 +34,13 @@ User-agent: Amazonbot
 Allow: /
 
 User-agent: Bytespider
+Allow: /
+
+User-agent: Diffbot
+Allow: /
+
+User-agent: FacebookBot
+Allow: /
+
+User-agent: Twitterbot
 Allow: /

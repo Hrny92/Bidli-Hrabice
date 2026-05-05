@@ -3,8 +3,10 @@ import imageUrlBuilder from '@sanity/image-url'
 
 // Pro GROQ dotazy: useCdn: false je nutné při použití SANITY_API_READ_TOKEN
 // (token nelze kombinovat s CDN proxy). Data jsou cachována Next.js revalidate.
-// Token se předá pouze pokud je skutečně nastaven – prázdný string způsobí 401.
-const readToken = process.env.SANITY_API_READ_TOKEN || undefined
+// Token se předá pouze pokud vypadá jako skutečný Sanity token (začíná "sk").
+// Prázdný string nebo placeholder "DOPLNIT" způsobí 401 – proto je ignorujeme.
+const rawToken = process.env.SANITY_API_READ_TOKEN
+const readToken = rawToken?.startsWith('sk') ? rawToken : undefined
 
 export const sanityClient = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ?? 'fxnzotxb',
