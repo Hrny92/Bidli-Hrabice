@@ -30,6 +30,7 @@ interface SanityHomepage {
   aboutParagraph3?: string
   aboutHighlightTitle?: string
   aboutHighlightItems?: { label: string; value: string }[]
+  roughBuildingText?: string
   aboutImage1Url?: string
   aboutImage2Url?: string
   techHeading?: string
@@ -56,6 +57,7 @@ const HOMEPAGE_QUERY = `*[_type == "homepage"][0] {
   aboutParagraph3,
   aboutHighlightTitle,
   aboutHighlightItems,
+  roughBuildingText,
   "aboutImage1Url": aboutImage1.asset->url,
   "aboutImage2Url": aboutImage2.asset->url,
   techHeading,
@@ -296,6 +298,15 @@ export default async function HomePage() {
                   </ul>
                 </div>
               )}
+
+              {/* Co je hrubá stavba */}
+              <div className="p-6 rounded-2xl bg-gray-100 border border-gray-200 mt-6">
+                <h3 className="font-bold text-gray-900 mb-2">Co je hrubá stavba?</h3>
+                <p className="text-sm text-gray-600 font-light leading-relaxed hyphens-auto">
+                  {hp.roughBuildingText ??
+                    'Hrubá stavba zahrnuje základy, nosné zdivo, stropy, střechu a vnější obvodové konstrukce – dům je uzavřen vůči počasí, ale bez dokončených interiérů. Kupující sám zvolí podlahy, obklady, kuchyni i koupelnu přesně podle svého vkusu a provede dokončovací práce vlastním tempem.'}
+                </p>
+              </div>
             </div>
           </div>
           </AnimateOnScroll>

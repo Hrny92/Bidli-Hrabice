@@ -147,6 +147,14 @@ export const homepageSchema = defineType({
       }],
     }),
     defineField({
+      name: 'roughBuildingText',
+      title: 'Co je hrubá stavba? – text',
+      type: 'text',
+      rows: 5,
+      group: 'about',
+      description: 'Vysvětlení pojmu „hrubá stavba" pro zájemce. Zobrazí se pod boxem Klíčové informace.',
+    }),
+    defineField({
       name: 'aboutImage1',
       title: 'Fotka 1 (nahoře)',
       type: 'image',
